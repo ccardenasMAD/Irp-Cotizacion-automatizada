@@ -18,14 +18,13 @@ const Navbar = () => {
   }, []);
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? "gradient-navy shadow-lg" : "bg-transparent"
-      }`}
-    >
-      <div className="container mx-auto flex items-center justify-between py-4">
-        <a href="#inicio" className="font-heading text-2xl font-bold text-primary-foreground tracking-wider">
-          IRP
-        </a>
+    className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      scrolled ? "gradient-navy shadow-lg py-2" : "bg-transparent py-4"
+    }`}
+  >
+    <div className="container mx-auto flex items-center justify-between px-6">
+    <a href="#inicio" className="text-2xl font-bold text-white font-heading">IRP</a>
+    
         {/* Desktop */}
         <ul className="hidden md:flex items-center gap-8">
           {navItems.map((item) => (
