@@ -1,8 +1,22 @@
 /** @type {import('tailwindcss').Config} */
-export default {
-  content: ["./index.html", "./src/**/*.{ts,tsx}"],
+module.exports = {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        navy: "#011D4C",
+        primary: "#074AAE",
+        steel: "#CFCFD2",
+        "btn-blue": "#0A59CC",
+      },
+      fontFamily: {
+        heading: ["Montserrat", "sans-serif"],
+        body: ["Open Sans", "sans-serif"],
+      },
+    },
   },
   plugins: [],
-};
+}

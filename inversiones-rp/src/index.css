@@ -1,41 +1,22 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@theme {
-  /* Colores principales de IRP */
-  --color-navy: hsl(216 97% 15%);
-  --color-primary: hsl(215 93% 36%);
-  --color-steel: hsl(220 2% 82%);
-  --color-highlight: hsl(216 90% 50%);
-  
-  /* Mapeo de variables de Shadcn/Lovable para que tus componentes funcionen */
-  --color-background: white;
-  --color-foreground: hsl(216 97% 15%);
-  --color-primary-foreground: white;
-  
-  /* Tipografías */
-  --font-heading: "Montserrat", sans-serif;
-  --font-body: "Open Sans", sans-serif;
-}
-
-/* Utilidades personalizadas (Gradients) */
-@utility gradient-navy {
-  background: linear-gradient(135deg, hsl(216 97% 15%), hsl(215 93% 36%));
-}
-
-@utility gradient-blue {
-  background: linear-gradient(135deg, hsl(215 93% 36%), hsl(216 90% 50%));
-}
-
-/* Estilos Base */
 @layer base {
-  html {
-    scroll-behavior: smooth;
-  }
   body {
-    @apply bg-background text-foreground font-body;
+    /* Cambiamos bg-background por white y text-foreground por navy */
+    @apply bg-white text-[#011D4C];
     margin: 0;
+    font-family: 'Open Sans', sans-serif;
   }
+
   h1, h2, h3, h4, h5, h6 {
-    @apply font-heading;
+    font-family: 'Montserrat', sans-serif;
+  }
+}
+
+@layer utilities {
+  .gradient-irp {
+    background: linear-gradient(135deg, #011D4C, #074AAE);
   }
 }

@@ -28,13 +28,15 @@ const HeroSection = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start animate-fade-in-up" style={{ animationDelay: "0.45s" }}>
-            <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700 text-white font-heading font-semibold px-8 transition-all">
-              <a href="#contacto">Contáctanos</a>
-            </Button>
-            <Button asChild variant="outline" size="lg" className="border-white text-white hover:bg-white/10 font-heading font-semibold px-8">
-              <a href="#cotizacion">Cotizar</a>
-            </Button>
-          </div>
+  <Button asChild size="lg" className="bg-[#0A59CC] hover:bg-[#0847A3] text-white font-heading font-semibold px-8 transition-all">
+    <a href="#contacto">Contáctanos</a>
+  </Button>
+  
+ 
+  <Button asChild size="lg" className="bg-[#0A59CC] hover:bg-[#0847A3] text-white font-heading font-semibold px-8 transition-all">
+    <a href="#cotizacion">Cotizar</a>
+  </Button>
+</div>
         </div>
       </div>
 
