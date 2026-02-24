@@ -1,13 +1,12 @@
 const QuienesSomos = () => {
   return (
     <section id="quienes-somos" className="py-16 container mx-auto text-center">
-      <h2 className="font-heading text-3xl md:text-4xl font-bold text-foreground mb-6">
+      <h2 className="font-heading text-3xl md:text-4xl font-bold text-navy mb-6">
         Quiénes Somos
       </h2>
 
-      {/* Líneas decorativas */}
-      <div className="w-20 h-1 gradient-blue mx-auto mb-2 rounded-full" />
-      <div className="w-16 h-1 gradient-blue mx-auto mb-8 rounded-full" />
+     
+      <div className="w-20 h-1 gradient-irp mx-auto mb-12 rounded-full" />
 
       <p className="text-muted-foreground leading-relaxed max-w-3xl mx-auto">
         Inversiones RP fue fundada en el año 2014 en el corazón del valle del Choapa,
@@ -19,6 +18,5 @@ const QuienesSomos = () => {
     </section>
   );
 };
-
 
 export default QuienesSomos;
