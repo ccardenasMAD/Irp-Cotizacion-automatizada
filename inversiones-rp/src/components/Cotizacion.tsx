@@ -14,7 +14,7 @@ const Cotizacion = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // VALIDACIÓN: Correo, Teléfono y Empresa son obligatorios
+    // VALIDACIÓN: Correo, Teléfono y Empresa 
     if (!registro.email.trim() || !registro.telefono.trim() || !registro.empresa.trim()) {
       toast({ 
         title: "Datos incompletos", 
