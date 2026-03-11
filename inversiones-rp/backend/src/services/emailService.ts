@@ -1,12 +1,26 @@
 import nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+console.log(" Intentando configurar correo con:", process.env.EMAIL_USER);
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS, // Usa una "Contraseña de Aplicación" de Google
+    pass: process.env.EMAIL_PASS, 
   },
 });
+
+transporter.verify((error, success) => {
+  if (error) {
+    console.error(" Error en la configuración de email:", error.message);
+  } else {
+    console.log("El servidor de correos está listo para enviar mensajes");
+  }
+});
+// ------------------------------------
 
 export const enviarCotizacionEmail = async (emailCliente: string, datos: any) => {
   const mailOptions = {
