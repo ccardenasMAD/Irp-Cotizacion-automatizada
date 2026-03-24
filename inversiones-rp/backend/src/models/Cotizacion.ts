@@ -1,7 +1,7 @@
 import { Schema, model } from 'mongoose';
 
 const CotizacionSchema = new Schema({
-  // Registro básico
+
   email: { type: String, required: true },
   telefono: { type: String, required: true },
   empresa: { type: String, required: true },
@@ -12,7 +12,7 @@ const CotizacionSchema = new Schema({
     enum: ['caneria', 'acero', 'mecanizado'] 
   },
 
-  // Campos específicos
+
   detalles: { type: Object, required: true },
 
   // Archivo de plano

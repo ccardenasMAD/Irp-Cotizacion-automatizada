@@ -6,7 +6,7 @@ import cotizacionRoutes from './routes/cotizacionRoutes';
 dotenv.config();
 const app = express();
 
-// 1. CORS - Debe ir antes que cualquier otra cosa
+
 app.use(cors({
   origin: 'http://localhost:5173',
   methods: ['GET', 'POST', 'OPTIONS'],
@@ -24,10 +24,9 @@ app.use((req, res, next) => {
   next();
 });
 
-// 4. Rutas
 app.use('/api', cotizacionRoutes);
 
-// Manejo de errores 404/500 para evitar que el navegador se quede esperando
+
 app.use((req, res) => {
   res.status(404).json({ mensaje: "Ruta no encontrada" });
 });

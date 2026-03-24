@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { Cotizacion } from '../models/Cotizacion';
 import { calcularPresupuesto } from '../services/calculoService';
-// 1. IMPORTA LA FUNCIÓN QUE CREASTE
 import { enviarCotizacionEmail } from '../services/emailService'; 
 
 export const crearCotizacion = async (req: Request, res: Response) => {
@@ -26,12 +25,14 @@ export const crearCotizacion = async (req: Request, res: Response) => {
 
     // 2. LLAMA A LA FUNCIÓN DE EMAIL AQUÍ
     // Usamos try/catch interno para que si el mail falla, 
-    // el usuario igual reciba su número de cotización.
+  
     try {
-      await enviarCotizacionEmail(email, {
-        tipoTrabajo,
-        valorEstimado
+      await enviarCotizacionEmail({
+        emailCliente: email,
+        resumenIA: `Cotización para ${tipoTrabajo}. Valor estimado: $${valorEstimado}`, 
+        tipoTrabajo: tipoTrabajo
       });
+
       console.log(` Correo enviado a: ${email}`);
     } catch (mailError) {
       console.error("El registro se guardó pero el mail falló:", mailError);
@@ -53,4 +54,21 @@ export const crearCotizacion = async (req: Request, res: Response) => {
       mensaje: "Error al procesar la cotización automática"
     });
   }
-};
+}
+  export const enviarEmailCotizacion = async (req: Request, res: Response) => {
+    try {
+      const { emailCliente, resumenIA } = req.body;
+      
+      if (!emailCliente || !resumenIA) {
+        return res.status(400).json({ success: false, mensaje: "Faltan datos" });
+      }
+  
+      await enviarCotizacionEmail({ emailCliente, resumenIA });
+      
+      return res.status(200).json({ success: true, mensaje: "Email enviado" });
+    } catch (error) {
+      console.error("Error enviando email:", error);
+      return res.status(500).json({ success: false, mensaje: "Error al enviar email" });
+    }
+  };
+  
