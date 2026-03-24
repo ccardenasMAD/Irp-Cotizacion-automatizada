@@ -1,11 +1,14 @@
-"use client"; // Si usas Next.js App Router
+"use client";
 
-import  { useState } from 'react';
-import { useChatbot } from '../hooks/use-chatbot'; // Ajusta la ruta a tu hook
+import { useState } from 'react';
+import { useChatbot } from '../hooks/use-chatbot';
+import { Send, ShieldCheck, User } from 'lucide-react';
 
 export default function ChatbotPage() {
   const { messages, sendMessage } = useChatbot();
   const [input, setInput] = useState('');
+
+  const BOT_AVATAR = "https://cdn-icons-png.flaticon.com/512/4712/4712035.png"; 
 
   const handleSend = () => {
     if (input.trim()) {
@@ -15,85 +18,78 @@ export default function ChatbotPage() {
   };
 
   return (
-    // Contenedor principal: Ocupa el alto de la pantalla menos el posible header
-    <div className="min-h-[calc(100vh-80px)] bg-slate-50 py-8 px-4 sm:px-6 lg:px-8 flex flex-col items-center">
+    <div className="min-h-screen bg-slate-50 py-12 px-4 flex flex-col items-center font-sans">
       
-    
-      <div className="w-full max-w-3xl mb-8 text-center">
-        <h1 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">
-          Asistente de Cotización <span className="text-blue-700 underline">IRP</span>
+      <div className="w-full max-w-3xl mb-10 text-center">
+        <h1 className="text-3xl font-black text-[#011D4C] sm:text-4xl uppercase tracking-tighter">
+          Asistente de Cotización <span className="text-[#0A59CC]">IRP</span>
         </h1>
-        <p className="mt-3 text-lg text-slate-600">
-          Responde unas breves preguntas para procesar tu solicitud técnica.
+        <p className="mt-3 text-slate-600 text-lg font-medium">
+          Soluciones inteligentes en calderería y mecanizado.
         </p>
       </div>
 
-      {/* Contenedor del Chat (Estructura de Página) */}
-      <div className="w-full max-w-3xl flex flex-col h-[600px] bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
+      <div className="w-full max-w-3xl flex flex-col h-[650px] bg-white rounded-[2rem] shadow-2xl border border-slate-200 overflow-hidden" role="main">
         
-        {/* Barra de estado / Identidad visual */}
-        <div className="bg-blue-700 px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.8)]"></div>
-            <span className="text-white font-medium tracking-wide">SISTEMA DE ASISTENCIA IRP EN LÍNEA</span>
+        {/* Cabecera con contraste alto */}
+        <div className="bg-[#011D4C] px-8 py-5 flex items-center justify-between shadow-lg">
+          <div className="flex items-center gap-4">
+            <div className="w-3 h-3 bg-green-400 rounded-full shadow-[0_0_12px_rgba(74,222,128,1)]" aria-hidden="true"></div>
+            <span className="text-white font-bold tracking-[0.1em] text-sm uppercase">SISTEMA IRP ACTIVO</span>
           </div>
-          <svg className="w-6 h-6 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-          </svg>
+          <ShieldCheck className="text-white w-6 h-6" aria-label="Conexión segura" />
         </div>
 
-        {/* Zona de conversación (Scrollable) */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-opacity-5">
+        {/* Zona de mensajes con texto más grande para legibilidad */}
+        <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-[#F8FAFC]">
           {messages.map((m) => (
             <div key={m.id} className={`flex ${m.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-              
-              <div className={`flex max-w-[85%] items-end gap-2 ${m.sender === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-                {/* Avatar Visual (Figuras) */}
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 shadow-md ${
-                  m.sender === 'user' ? 'bg-blue-600' : 'bg-slate-800'
+              <div className={`flex max-w-[85%] items-start gap-3 ${m.sender === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+                
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-md shrink-0 border-2 bg-white ${
+                  m.sender === 'user' ? 'border-blue-200' : 'border-slate-100'
                 }`}>
                   {m.sender === 'user' ? (
-                    <span className="text-xs text-white font-bold">TÚ</span>
+                    <User size={24} className="text-[#0A59CC]" aria-label="Tú" />
                   ) : (
-                    <span className="text-xs text-white font-bold">IRP</span>
+                    <img src={BOT_AVATAR} alt="Asistente Virtual IRP" className="w-10 h-10 object-contain p-1" />
                   )}
                 </div>
 
-                {/* Burbuja de Texto */}
-                <div className={`p-4 rounded-2xl text-sm leading-relaxed shadow-sm ${
+                <div className={`p-5 rounded-3xl text-base font-semibold leading-relaxed shadow-sm ${
                   m.sender === 'user'
-                    ? 'bg-blue-700 text-white rounded-br-none border-blue-800'
-                    : 'bg-white text-slate-800 rounded-bl-none border border-slate-200'
+                    ? 'bg-[#0A59CC] text-white rounded-tr-none'
+                    : 'bg-white text-[#011D4C] border border-slate-200 rounded-tl-none'
                 }`}>
                   {m.text}
                 </div>
               </div>
-
             </div>
           ))}
         </div>
 
-        <div className="p-5 bg-slate-50 border-t border-slate-200">
-          <div className="flex gap-3">
+        {/* Input con accesibilidad corregida */}
+        <div className="p-6 bg-white border-t border-slate-100">
+          <div className="flex gap-4">
             <input 
               value={input} 
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-              className="flex-1 px-5 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all shadow-inner bg-white text-slate-900"
-              placeholder="Escriba su respuesta aquí..."
+              className="flex-1 px-6 py-4 rounded-2xl border-2 border-slate-200 focus:outline-none focus:border-[#0A59CC] transition-all bg-slate-50 text-[#011D4C] text-lg font-medium"
+              placeholder="Escribe tu consulta técnica aquí..."
+              aria-label="Mensaje para el asistente"
             />
             <button 
               onClick={handleSend}
-              className="bg-blue-700 hover:bg-blue-800 text-white px-8 py-3 rounded-xl font-bold transition-all transform active:scale-95 flex items-center shadow-lg gap-2"
+              title="Enviar mensaje"
+              aria-label="Enviar mensaje"
+              className="bg-[#0A59CC] hover:bg-[#0847A3] text-white p-4 rounded-2xl transition-all transform active:scale-95 shadow-xl flex items-center justify-center min-w-[60px]"
             >
-              ENVIAR
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
+              <Send size={28} />
             </button>
           </div>
-          <p className="text-[10px] text-slate-400 mt-3 text-center uppercase tracking-widest">
-            Inversiones RP - Automatización de Cotizaciones 2026
+          <p className="mt-4 text-xs text-slate-500 font-bold uppercase tracking-wider text-center italic">
+            Inversiones RP — Metalmecánica de Precisión
           </p>
         </div>
       </div>
