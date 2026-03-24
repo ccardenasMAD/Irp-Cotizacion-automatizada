@@ -1,19 +1,34 @@
 import express from 'express';
 import cors from 'cors';
+import dotenv from 'dotenv';
 import cotizacionRoutes from './routes/cotizacionRoutes';
 
+dotenv.config();
 const app = express();
 
-// Configuración de middlewares
-app.use(cors()); // Permite que tu frontend se comunique con el backend
-app.use(express.json()); // Necesario para procesar los datos del formulario
 
-// Rutas de la API
-app.use('/api', cotizacionRoutes);
+app.use(cors({
+  origin: 'http://localhost:5173',
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
 
-// Ruta base de prueba
-app.get('/', (req, res) => {
-  res.send('Servidor IRP operando correctamente');
+// 2. Middlewares de datos
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// 3. Log de depuración
+app.use((req, res, next) => {
+  console.log(`⚡ ${req.method} ${req.url}`);
+  next();
 });
 
-export default app; // Esta línea es la que soluciona el error en server.ts
+app.use('/api', cotizacionRoutes);
+
+
+app.use((req, res) => {
+  res.status(404).json({ mensaje: "Ruta no encontrada" });
+});
+
+export default app;

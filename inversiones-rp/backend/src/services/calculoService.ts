@@ -1,41 +1,47 @@
 export const calcularPresupuesto = (tipo: string, detalles: any): number => {
-    let total = 0;
-    
-    // Definición de constantes de costo base
-    const PRECIOS = {
-      BASE_KG: 3500, //valor base por kilogramo para todos los tipos de trabajo 
-      REVESTIMIENTO: 500, // Costo extra por pulgada/metro en cañerías valor ejemplo
-      BRONCE_EXTRA: 1200, // Recargo por materiales especiales
-      COMPLEJIDAD_MECANIZADO: 1.2, // Factor multiplicador para procesos de precisión
-    };
+  let total = 0;
   
-    // 1. Cálculo base por peso (aplica a todos los tipos)
-    const peso = Number(detalles.pesoTotal) || 0;
-    total = peso * PRECIOS.BASE_KG;
-  
-    // 2. Lógica específica por tipo de trabajo para mayor precisión
-    switch (tipo) {
-      case 'caneria':
-        // Si tiene revestimiento interior o exterior, sumamos un adicional
-        if (detalles.revestimientoInterior || detalles.revestimientoExterior) {
-          total += (peso * 0.1); // Ejemplo: 10% adicional por tratamiento superficial
-        }
-        break;
-  
-      case 'acero':
-        // Recargo si incluye piezas de bronce u otros materiales
-        if (detalles.incluyeOtrosMateriales === 'bronce') {
-          total += PRECIOS.BRONCE_EXTRA;
-        }
-        break;
-  
-      case 'mecanizado':
-        // El mecanizado suele ser más caro por hora máquina
-        if (detalles.tipoMecanizado === 'centro') {
-          total *= PRECIOS.COMPLEJIDAD_MECANIZADO;
-        }
-        break;
-    }
-  
-    return Math.round(total); // Retornamos el valor final para mostrar de inmediato
+  const PRECIOS = {
+    BASE_KG: 3500,
+    RECARGO_REVESTIMIENTO: 1.15, 
+    RECARGO_VICTAULIC: 12000,    
+    RECARGO_BRONCE: 1.25,        
+    FACTOR_CENTRO_MECANIZADO: 1.35, 
   };
+
+  const peso = Number(detalles.pesoTotal) || 0;
+  total = peso * PRECIOS.BASE_KG;
+
+  switch (tipo.toLowerCase()) {
+    case 'cañería':
+      // Punto 3.4: Si tiene revestimientos, aplicamos factor
+      if (detalles.revestimientoInterior || detalles.revestimientoExterior) {
+        total *= PRECIOS.RECARGO_REVESTIMIENTO;
+      }
+      // Si el acoplamiento es Victaulic o Flange, sumamos costo de piezas
+      if (detalles.tipoAcoplamiento === 'Victaulic' || detalles.tipoAcoplamiento === 'Flange') {
+        total += PRECIOS.RECARGO_VICTAULIC;
+      }
+      break;
+
+    case 'acero estructural':
+      //  Recargo por materiales como Bronce
+      if (detalles.incluyeOtrosMateriales) {
+        total *= PRECIOS.RECARGO_BRONCE;
+      }
+      break;
+
+    case 'mecanizado':
+      //  Materiales caros como Inoxidable o Bronce
+      if (detalles.material === 'Inoxidable' || detalles.material === 'Bronce') {
+        total *= 1.5; // 50% extra por dificultad de material
+      }
+      // Recargo por tipo de máquina
+      if (detalles.tipoMecanizado === 'Centro de mecanizado') {
+        total *= PRECIOS.FACTOR_CENTRO_MECANIZADO;
+      }
+      break;
+  }
+
+  return Math.round(total);
+};
