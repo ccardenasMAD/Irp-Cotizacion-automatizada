@@ -74,7 +74,7 @@ const Cotizacion = () => {
             </Link>
             
             <p className="mt-6 text-xs text-slate-400 uppercase tracking-widest font-semibold">
-              Proceso 100% Automatizado e Imediato
+              Proceso 100% Automatizado de Inmediato
             </p>
           </div>
         </div>
