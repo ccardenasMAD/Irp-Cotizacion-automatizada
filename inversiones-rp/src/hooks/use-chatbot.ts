@@ -1,127 +1,68 @@
 import { useState } from "react";
 
-export interface Message {
+
+interface Message {
   id: string;
   text: string;
-  sender: "bot" | "user";
+  sender: "user" | "bot";
 }
 
-type Step = "BIENVENIDA" | "REGISTRO_TELEFONO" | "REGISTRO_EMPRESA" | "TIPO_TRABAJO" | "DETALLES_CANERIA" | "FINALIZADO";
-
-interface CotizacionPayload {
-    email: string;
-    telefono: string;
-    empresa: string;
-    tipoTrabajo: string;
-    detalles?: string;
-  }
-
 export const useChatbot = () => {
-  const [step, setStep] = useState<Step>("BIENVENIDA");
-  const [datos, setDatos] = useState({
-    email: "",
-    telefono: "",
-    empresa: "",
-    tipoTrabajo: "",
-    detalles: ""
-  });
-
   const [messages, setMessages] = useState<Message[]>([
-    { id: "1", text: "¡Hola! Soy el asistente de IRP.", sender: "bot" },
-    { id: "2", text: "Para comenzar con tu cotización, ¿cuál es tu correo electrónico?", sender: "bot" }
+    { id: "1", text: "Hola, soy el asistente de IRP. ¿En qué puedo ayudarte hoy?", sender: "bot" }
   ]);
-
-  const addBotMessage = (text: string) => {
-    setMessages((prev) => [...prev, { id: Date.now().toString(), text, sender: "bot" }]);
-  };
-
-  // Función de envío movida fuera para limpieza
-  //function for sending data to n8n
-  const enviarAN8N = async (payload: CotizacionPayload) => {
-    try {
-      await fetch("http://localhost:5678/webhook-test/cotizacion-irp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-      console.log("Datos recibidos por n8n");
-    } catch (e) {
-      console.error(" Error de conexión con n8n:", e);
-    }
-  };
-
-  // MAPA DE PASOS
-  // STEP MAP
-  const handleStep: Record<Step, (text: string) => void> = {
-    BIENVENIDA: (text) => {
-      // Usamos el callback de setDatos para asegurar que el objeto esté actualizado
-      //use callback in setDatos to ensure we have the latest state when updating
-      setDatos(prev => {
-        const nuevos = { ...prev, email: text };
-        addBotMessage("Gracias. Ahora, dinos un teléfono de contacto.");
-        setStep("REGISTRO_TELEFONO");
-        return nuevos;
-      });
-    },
-    REGISTRO_TELEFONO: (text) => {
-      setDatos(prev => {
-        const nuevos = { ...prev, telefono: text };
-        addBotMessage("¿En qué empresa o lugar trabajas?");
-        setStep("REGISTRO_EMPRESA");
-        return nuevos;
-      });
-    },
-    REGISTRO_EMPRESA: (text) => {
-      setDatos(prev => {
-        const nuevos = { ...prev, empresa: text };
-        addBotMessage("Perfecto. ¿Qué tipo de trabajo deseas? (Cañería, Acero estructural o Mecanizado)");
-        setStep("TIPO_TRABAJO");
-        return nuevos;
-      });
-    },
-    TIPO_TRABAJO: (text) => {
-      const seleccion = text.toLowerCase();
-      setDatos(prev => {
-        const nuevos = { ...prev, tipoTrabajo: seleccion };
-        if (seleccion.includes("cañería")) {
-          addBotMessage("Has elegido Cañería. Indica el diámetro y largo total.");
-          setStep("DETALLES_CANERIA");
-        } else {
-          addBotMessage(`Entendido. Procesando tu solicitud de ${text}.`);
-          enviarAN8N(nuevos); // send current data to n8n// Enviamos los datos actuales a n8n 
-          setStep("FINALIZADO");
-        }
-        return nuevos;
-      });
-    },
-    DETALLES_CANERIA: (text) => {
-      setDatos(prev => {
-        const finales = { ...prev, detalles: text };
-        addBotMessage("Gracias por los detalles. Procesando tu cotización.");
-        enviarAN8N(finales);
-        setStep("FINALIZADO");
-        return finales;
-      });
-    },
-    FINALIZADO: () => {
-      addBotMessage("Un asesor de IRP revisará tu caso pronto.");
-    }
-  };
+  const [loading, setLoading] = useState(false);
 
   const sendMessage = async (text: string) => {
-    if (!text.trim()) return;
+    // 1. Agregar el mensaje del usuario inmediatamente
+    const userMsg: Message = { id: Date.now().toString(), text, sender: "user" };
+    setMessages(prev => [...prev, userMsg]);
+    setLoading(true);
 
-    // 1. Agregar mensaje del usuario a la vista
-    // 1. Add user message to view
-    setMessages(prev => [...prev, { id: Date.now().toString(), text, sender: "user" }]);
+    const controller = new AbortController();
+     const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-    // 2. Procesar el mensaje según el paso actual 
-    // 2. Process message based on current step
-    const accion = handleStep[step];
-    if (accion) {
-      accion(text);
+    try {
+     // send the message to n8n webhook and wait for the response
+      //const response = await fetch("http://localhost:5678/webhook/21cf491f-fef8-432f-8981-ac92fc8e9c11/chat", {
+        const response = await fetch("http://127.0.0.1:5001/api/chat",{ 
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({ 
+          chatInput: text, // n8n will receive this as $json["chatInput"] in the workflow
+          sessionId: "irp-session-2026" 
+        }),
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) throw new Error("Error en la respuesta del servidor");
+
+      const data = await response.json();
+      
+      // n8n will AI response in either data.output or data.text depending on how you set it up, so we check both
+      const botResponse = data.output || data.text || "Recibí tu mensaje, pero hubo un problema al procesar la respuesta.";
+
+      setMessages(prev => [...prev, { 
+        id: (Date.now() + 1).toString(), 
+        text: botResponse, 
+        sender: "bot" 
+      }]);
+
+    } catch (e) {
+      console.error("Error en el chatbot:", e);
+      setMessages(prev => [...prev, { 
+        id: Date.now().toString(), 
+        text: "Lo siento, tengo problemas de conexión con mi base de datos. Por favor, intenta de nuevo en unos minutos.", 
+        sender: "bot" 
+      }]);
+    } finally {
+      setLoading(false);
     }
   };
 
-  return { messages, sendMessage };
+  return { messages, sendMessage, loading };
 };

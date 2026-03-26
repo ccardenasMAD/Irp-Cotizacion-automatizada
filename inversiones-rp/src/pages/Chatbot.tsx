@@ -1,11 +1,21 @@
-"use client"; // Si usas Next.js App Router
+"use client";
 
-import  { useState } from 'react';
-import { useChatbot } from '../hooks/use-chatbot'; // Ajusta la ruta a tu hook
+import { useState } from 'react';
+import { useChatbot } from '../hooks/use-chatbot';
+import { Send, ShieldCheck, User, Info } from 'lucide-react';
+import FileUpload from "@/components/FileUpload";
+import ReactMarkdown from 'react-markdown';
+import Navbar from "@/components/Navbar";
+
+interface UploadResponse {
+  fileName?: string;
+}
 
 export default function ChatbotPage() {
+  const [sessionId] = useState(() => `irp-session-${Date.now()}`);
   const { messages, sendMessage } = useChatbot();
   const [input, setInput] = useState('');
+  const BOT_AVATAR = "https://cdn-icons-png.flaticon.com/512/4712/4712035.png"; 
 
   const handleSend = () => {
     if (input.trim()) {
@@ -14,89 +24,106 @@ export default function ChatbotPage() {
     }
   };
 
+  const handleUploadSuccess = (data: UploadResponse) => {
+    sendMessage(`He subido el archivo técnico: ${data.fileName || 'Plano de cotización'}. Por favor, utilízalo para calcular mi presupuesto.`);
+  };
+
   return (
-    // Contenedor principal: Ocupa el alto de la pantalla menos el posible header
-    <div className="min-h-[calc(100vh-80px)] bg-slate-50 py-8 px-4 sm:px-6 lg:px-8 flex flex-col items-center">
-      
-    
-      <div className="w-full max-w-3xl mb-8 text-center">
-        <h1 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">
-          Asistente de Cotización <span className="text-blue-700 underline">IRP</span>
-        </h1>
-        <p className="mt-3 text-lg text-slate-600">
-          Responde unas breves preguntas para procesar tu solicitud técnica.
-        </p>
-      </div>
-
-      {/* Contenedor del Chat (Estructura de Página) */}
-      <div className="w-full max-w-3xl flex flex-col h-[600px] bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
-        
-        {/* Barra de estado / Identidad visual */}
-        <div className="bg-blue-700 px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.8)]"></div>
-            <span className="text-white font-medium tracking-wide">SISTEMA DE ASISTENCIA IRP EN LÍNEA</span>
-          </div>
-          <svg className="w-6 h-6 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-          </svg>
-        </div>
-
-        {/* Zona de conversación (Scrollable) */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-opacity-5">
-          {messages.map((m) => (
-            <div key={m.id} className={`flex ${m.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-              
-              <div className={`flex max-w-[85%] items-end gap-2 ${m.sender === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-                {/* Avatar Visual (Figuras) */}
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 shadow-md ${
-                  m.sender === 'user' ? 'bg-blue-600' : 'bg-slate-800'
-                }`}>
-                  {m.sender === 'user' ? (
-                    <span className="text-xs text-white font-bold">TÚ</span>
-                  ) : (
-                    <span className="text-xs text-white font-bold">IRP</span>
-                  )}
-                </div>
-
-                {/* Burbuja de Texto */}
-                <div className={`p-4 rounded-2xl text-sm leading-relaxed shadow-sm ${
-                  m.sender === 'user'
-                    ? 'bg-blue-700 text-white rounded-br-none border-blue-800'
-                    : 'bg-white text-slate-800 rounded-bl-none border border-slate-200'
-                }`}>
-                  {m.text}
-                </div>
-              </div>
-
-            </div>
-          ))}
-        </div>
-
-        <div className="p-5 bg-slate-50 border-t border-slate-200">
-          <div className="flex gap-3">
-            <input 
-              value={input} 
-              onChange={(e) => setInput(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-              className="flex-1 px-5 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all shadow-inner bg-white text-slate-900"
-              placeholder="Escriba su respuesta aquí..."
-            />
-            <button 
-              onClick={handleSend}
-              className="bg-blue-700 hover:bg-blue-800 text-white px-8 py-3 rounded-xl font-bold transition-all transform active:scale-95 flex items-center shadow-lg gap-2"
-            >
-              ENVIAR
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
-            </button>
-          </div>
-          <p className="text-[10px] text-slate-400 mt-3 text-center uppercase tracking-widest">
-            Inversiones RP - Automatización de Cotizaciones 2026
+    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
+      <Navbar />
+      <main className="flex-1 py-12 px-4 mt-20 max-w-7xl mx-auto w-full flex flex-col">
+        <div className="w-full mb-10 text-center">
+          <h1 className="text-3xl font-black text-[#011D4C] sm:text-4xl uppercase tracking-tighter">
+            Plataforma de Cotización <span className="text-[#0A59CC]">Automatizada</span>
+          </h1>
+          <p className="mt-3 text-slate-600 text-lg font-medium">
+            Sube tu plano y chatea con nuestro asistente técnico.
           </p>
         </div>
-      </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          {/* COLUMNA IZQUIERDA: CHATBOT */}
+          <div className="lg:col-span-7 w-full flex flex-col h-[680px] bg-white rounded-[2rem] shadow-2xl border border-slate-200 overflow-hidden" role="main">
+            <div className="bg-[#011D4C] px-8 py-5 flex items-center justify-between shadow-lg">
+              <div className="flex items-center gap-4">
+                <div className="w-3 h-3 bg-green-400 rounded-full shadow-[0_0_12px_rgba(74,222,128,1)]" aria-hidden="true"></div>
+                <span className="text-white font-bold tracking-[0.1em] text-sm uppercase">SISTEMA IRP ACTIVO</span>
+              </div>
+              <ShieldCheck className="text-white w-6 h-6" aria-label="Conexión segura" />
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-[#F8FAFC]">
+              {messages.map((m) => (
+                <div key={m.id} className={`flex ${m.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`flex max-w-[85%] items-start gap-3 ${m.sender === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-md shrink-0 border-2 bg-white ${m.sender === 'user' ? 'border-blue-200' : 'border-slate-100'}`}>
+                      {m.sender === 'user' ? (
+                        <User size={24} className="text-[#0A59CC]" aria-label="Tú" />
+                      ) : (
+                        <img src={BOT_AVATAR} alt="Asistente Virtual IRP" className="w-10 h-10 object-contain p-1" />
+                      )}
+                    </div>
+                    <div className={`p-5 rounded-3xl text-base font-semibold leading-relaxed shadow-sm ${m.sender === 'user' ? 'bg-[#0A59CC] text-white rounded-tr-none' : 'bg-white text-[#011D4C] border border-slate-200 rounded-tl-none'}`}>
+                      {m.sender === 'bot' ? (
+                        <div className="prose prose-sm max-w-none">
+                          <ReactMarkdown>{m.text}</ReactMarkdown>
+                        </div>
+                      ) : (
+                        m.text
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="p-6 bg-white border-t border-slate-100">
+              <div className="flex gap-4">
+                <input 
+                  value={input} 
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                  className="flex-1 px-6 py-4 rounded-2xl border-2 border-slate-200 focus:outline-none focus:border-[#0A59CC] transition-all bg-slate-50 text-[#011D4C] text-lg font-medium"
+                  placeholder="Escribe tu consulta técnica aquí..."
+                />
+                <button aria-label='btn' onClick={handleSend} className="bg-[#0A59CC] hover:bg-[#0847A3] text-white p-4 rounded-2xl transition-all transform active:scale-95 shadow-xl flex items-center justify-center min-w-[60px]">
+                  <Send size={28} />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* COLUMNA DERECHA */}
+          <div className="lg:col-span-5 flex flex-col gap-6 lg:h-[680px] justify-between">
+            <div className="flex-1">
+              <FileUpload sessionId={sessionId} onSuccess={handleUploadSuccess} />
+            </div>
+            <div className="bg-white p-8 rounded-[2rem] shadow-xl border border-slate-200">
+              <div className="flex items-center gap-3 mb-4 text-[#011D4C]">
+                <Info className="text-[#0A59CC]" />
+                <h3 className="font-black uppercase tracking-tighter">Guía de Cotización</h3>
+              </div>
+              <div className="space-y-4 text-slate-600 text-sm font-medium">
+                <p className="flex gap-2"><span className="text-[#0A59CC]">1.</span> Sube tu croquis o plano en PDF/Imagen.</p>
+                <p className="flex gap-2"><span className="text-[#0A59CC]">2.</span> Detalla el material (Acero, Inoxidable, etc.) en el chat.</p>
+                <p className="flex gap-2"><span className="text-[#0A59CC]">3.</span> Recibe un desglose técnico estimado al instante.</p>
+              </div>
+              <div className="mt-6 p-4 bg-blue-50 rounded-2xl border border-blue-100">
+                <p className="text-[#0A59CC] text-xs font-bold uppercase">Nota de Seguridad</p>
+                <p className="text-slate-500 text-[10px] mt-1 leading-tight">
+                  Toda la documentación técnica es procesada bajo protocolos de confidencialidad industrial.
+                </p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <p className="mt-10 text-xs text-slate-500 font-bold uppercase tracking-wider text-center italic">
+          Inversiones RP — Metalmecánica de Precisión
+        </p>
+      </main>
     </div>
   );
 }

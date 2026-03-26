@@ -2,12 +2,12 @@ import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 
 const navItems = [
-  { label: "Inicio", href: "#inicio" },
-  { label: "Quiénes Somos", href: "#quienes-somos" },
-  { label: "Misión y Visión", href: "#mision-vision" },
-  { label: "Servicios", href: "#servicios" },
-  { label: "Contacto", href: "#contacto" },
-  { label: "Cotización", href: "#cotizacion" },
+  { label: "Inicio", href: "/#inicio" },
+  { label: "Quiénes Somos", href: "/#quienes-somos" },
+  { label: "Misión y Visión", href: "/#mision-vision" },
+  { label: "Servicios", href: "/#servicios" },
+  { label: "Contacto", href: "/#contacto" },
+  { label: "Cotización", href: "/#cotizacion" },
 ];
 
 const Navbar = () => {
@@ -27,7 +27,7 @@ const Navbar = () => {
       }`}
     >
       <div className="container mx-auto flex items-center justify-between px-6">
-        <a href="#inicio" className="text-2xl font-bold text-white font-heading">
+        <a href="#/" className="text-2xl font-bold text-white font-heading">
           IRP
         </a>
     
