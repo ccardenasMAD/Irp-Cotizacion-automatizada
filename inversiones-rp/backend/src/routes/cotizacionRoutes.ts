@@ -13,7 +13,7 @@ const sessionFiles: { [key: string]: string } = {};
 router.post('/cotizar', upload.single('plano'), (req, res, next) => {// If there is a file and a sessionId, we save it in our temporary storage.
   if (req.file && req.body.sessionId) {
       sessionFiles[req.body.sessionId] = req.file.path;
-      console.log(`📂 Archivo vinculado a sesión: ${req.body.sessionId}`);
+      console.log(` Archivo vinculado a sesión: ${req.body.sessionId}`);
   }
   crearCotizacion(req, res); 
 });
@@ -26,7 +26,7 @@ router.post('/chat', async (req, res) => {
   
     try {
         
-    // The backend requests the response from n8n, which will process the input and return the AI's response. We also pass the session
+   // Extract client email from AI text using Regex
       const n8nResponse = await fetch("http://localhost:5678/webhook/21cf491f-fef8-432f-8981-ac92fc8e9c11/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -39,6 +39,7 @@ router.post('/chat', async (req, res) => {
       const data: any = await n8nResponse.json();
       const botResponse = data.output || data.text|| "La IA no devolvió una respuesta clara.";
 
+      // Trigger email automation when specific AI keyword is detected
       const customerEmail = botResponse.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/)?.[0];
 
      // We only fire if we detect the email and keyword from the quote
@@ -58,7 +59,7 @@ router.post('/chat', async (req, res) => {
             }).catch(err => console.error(" Error enviando email:", err));
      
          delete sessionFiles[sessionId];
-        console.log(`🧹 Memoria de archivo limpiada para sesión: ${sessionId}`);
+        console.log(` Memoria de archivo limpiada para sesión: ${sessionId}`);
 
           }
     

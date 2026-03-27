@@ -23,14 +23,15 @@ export const crearCotizacion = async (req: Request, res: Response) => {
 
     await nuevaCotizacion.save();
 
-    // 2. LLAMA A LA FUNCIÓN DE EMAIL AQUÍ
-    // Usamos try/catch interno para que si el mail falla, 
+   
   
     try {
+      // Send courtesy email to client and BCC to company for technical validation. We include the estimated value and type of work in the email body.
       await enviarCotizacionEmail({
         emailCliente: email,
         resumenIA: `Cotización para ${tipoTrabajo}. Valor estimado: $${valorEstimado}`, 
-        tipoTrabajo: tipoTrabajo
+        tipoTrabajo: tipoTrabajo,
+        rutaArchivo: planoUrl // Attachment included for technical review
       });
 
       console.log(` Correo enviado a: ${email}`);
@@ -62,7 +63,7 @@ export const crearCotizacion = async (req: Request, res: Response) => {
       if (!emailCliente || !resumenIA) {
         return res.status(400).json({ success: false, mensaje: "Faltan datos" });
       }
-  
+     // Direct trigger for manual or AI-driven email sending
       await enviarCotizacionEmail({ emailCliente, resumenIA });
       
       return res.status(200).json({ success: true, mensaje: "Email enviado" });

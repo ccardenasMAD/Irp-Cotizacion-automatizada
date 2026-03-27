@@ -1,6 +1,7 @@
 export const calcularPresupuesto = (tipo: string, detalles: any): number => {
   let total = 0;
   
+  // Pricing constants for estimation logic
   const PRECIOS = {
     BASE_KG: 3500,
     RECARGO_REVESTIMIENTO: 1.15, 
@@ -9,34 +10,36 @@ export const calcularPresupuesto = (tipo: string, detalles: any): number => {
     FACTOR_CENTRO_MECANIZADO: 1.35, 
   };
 
+  // Base calculation derived from total weight
   const peso = Number(detalles.pesoTotal) || 0;
   total = peso * PRECIOS.BASE_KG;
 
   switch (tipo.toLowerCase()) {
     case 'cañería':
-      // Punto 3.4: Si tiene revestimientos, aplicamos factor
+    
+      // Add fixed cost for specialized coupling types
       if (detalles.revestimientoInterior || detalles.revestimientoExterior) {
         total *= PRECIOS.RECARGO_REVESTIMIENTO;
       }
-      // Si el acoplamiento es Victaulic o Flange, sumamos costo de piezas
+     
       if (detalles.tipoAcoplamiento === 'Victaulic' || detalles.tipoAcoplamiento === 'Flange') {
         total += PRECIOS.RECARGO_VICTAULIC;
       }
       break;
 
     case 'acero estructural':
-      //  Recargo por materiales como Bronce
+      
       if (detalles.incluyeOtrosMateriales) {
         total *= PRECIOS.RECARGO_BRONCE;
       }
       break;
 
     case 'mecanizado':
-      //  Materiales caros como Inoxidable o Bronce
+     
       if (detalles.material === 'Inoxidable' || detalles.material === 'Bronce') {
-        total *= 1.5; // 50% extra por dificultad de material
+        total *= 1.5; 
       }
-      // Recargo por tipo de máquina
+     
       if (detalles.tipoMecanizado === 'Centro de mecanizado') {
         total *= PRECIOS.FACTOR_CENTRO_MECANIZADO;
       }

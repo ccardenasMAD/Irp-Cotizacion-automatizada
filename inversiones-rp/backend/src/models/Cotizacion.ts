@@ -6,6 +6,7 @@ const CotizacionSchema = new Schema({
   telefono: { type: String, required: true },
   empresa: { type: String, required: true },
   
+  // Restricted to specific service categories to ensure accurate cost estimation
   tipoTrabajo: { 
     type: String, 
     required: true, 
@@ -15,10 +16,9 @@ const CotizacionSchema = new Schema({
 
   detalles: { type: Object, required: true },
 
-  // Archivo de plano
   planoUrl: { type: String },
 
-  // Resultado
+  // AI-generated cost estimation based on the provided details and industry standards
   valorEstimado: { type: Number, required: true },
   fecha: { type: Date, default: Date.now }
 });

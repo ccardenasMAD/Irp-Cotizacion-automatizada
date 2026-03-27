@@ -7,12 +7,12 @@ dotenv.config();
 const PORT = process.env.PORT || 5001;
 const MONGO_URI = process.env.MONGO_URI || '';
 
-// 1. Levantamos el servidor de inmediato
+
 app.listen(PORT, () => {
   console.log(` Servidor encendido en: http://localhost:${PORT}`);
 });
 
-// 2. Intentamos conectar a Mongo en segundo plano
+
 if (!MONGO_URI) {
   console.error(" ERROR: No hay MONGO_URI en el archivo .env");
 } else {
