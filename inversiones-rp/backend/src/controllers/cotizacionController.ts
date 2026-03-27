@@ -7,7 +7,11 @@ export const crearCotizacion = async (req: Request, res: Response) => {
   try {
     const { email, telefono, empresa, tipoTrabajo, detalles } = req.body;
     const detallesParsed = typeof detalles === 'string' ? JSON.parse(detalles) : detalles;
-    const planoUrl = req.file ? req.file.path : undefined;
+    const archivoData = req.file ? {
+      content: req.file.buffer,
+      filename: req.file.originalname,
+      contentType: req.file.mimetype
+    } : undefined;
 
     const valorEstimado = calcularPresupuesto(tipoTrabajo, detallesParsed);
 
@@ -17,7 +21,7 @@ export const crearCotizacion = async (req: Request, res: Response) => {
       empresa,
       tipoTrabajo,
       detalles: detallesParsed,
-      planoUrl,
+      planoUrl: req.file ? req.file.originalname : "Sin plano", 
       valorEstimado
     });
 
@@ -31,7 +35,7 @@ export const crearCotizacion = async (req: Request, res: Response) => {
         emailCliente: email,
         resumenIA: `Cotización para ${tipoTrabajo}. Valor estimado: $${valorEstimado}`, 
         tipoTrabajo: tipoTrabajo,
-        rutaArchivo: planoUrl // Attachment included for technical review
+        archivo: archivoData // The memory buffer is passed
       });
 
       console.log(` Correo enviado a: ${email}`);
