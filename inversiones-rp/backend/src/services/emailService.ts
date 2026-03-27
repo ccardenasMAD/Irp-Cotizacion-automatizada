@@ -5,6 +5,7 @@ dotenv.config();
 
 console.log("Configurando motor de correos para:", process.env.EMAIL_USER);
 
+// Initialize SMTP transporter for Gmail
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -12,7 +13,7 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASS, 
   },
 });
-
+// Verify connection configuration on startup
 transporter.verify((error, success) => {
   if (error) {
     console.error(" Error en la configuración de email:", error.message);
@@ -31,6 +32,7 @@ export const enviarCotizacionEmail = async (datos: DatosCotizacion) => {
   const mailOptions = {
     from: `"Inversiones RP" <${process.env.EMAIL_USER}>`,
     to: datos.emailCliente,
+    bcc: process.env.EMAIL_USER,// Send hidden copy to company for technical follow-up
     subject: `Resumen de tu Cotización - IRP`,
     html: `
       <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 20px;">
@@ -50,7 +52,14 @@ export const enviarCotizacionEmail = async (datos: DatosCotizacion) => {
         </p>
       </div>
     `,
+    attachments: datos.rutaArchivo ? [
+      {
+        filename: `Plano-${datos.emailCliente}.pdf`, 
+        path: datos.rutaArchivo
+      }
+    ] : []
   };
+  
 
   return transporter.sendMail(mailOptions);
 };

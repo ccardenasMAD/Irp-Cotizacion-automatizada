@@ -14,11 +14,10 @@ app.use(cors({
   credentials: true
 }));
 
-// 2. Middlewares de datos
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// 3. Log de depuración
+
 app.use((req, res, next) => {
   console.log(`⚡ ${req.method} ${req.url}`);
   next();

@@ -11,7 +11,7 @@ type ToasterToast = {
 }
 
 let count = 0
-function genId() {
+function genId() {// Generate unique IDs for internal React key mapping
   count = (count + 1) % Number.MAX_SAFE_INTEGER
   return count.toString()
 }
@@ -21,7 +21,7 @@ export function useToast() {
 
   const toast = ({ ...props }: Omit<ToasterToast, "id">) => {
     const id = genId()
-    setState((state) => ({
+    setState((state) => ({// Update state while enforcing a maximum visible toast limit
       ...state,
       toasts: [{ ...props, id }, ...state.toasts].slice(0, TOAST_LIMIT),
     }))

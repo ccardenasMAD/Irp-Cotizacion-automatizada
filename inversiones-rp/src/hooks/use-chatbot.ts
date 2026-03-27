@@ -19,12 +19,12 @@ export const useChatbot = () => {
     setMessages(prev => [...prev, userMsg]);
     setLoading(true);
 
+    // Timeout control to prevent hanging requests
     const controller = new AbortController();
      const timeoutId = setTimeout(() => controller.abort(), 15000);
 
     try {
      // send the message to n8n webhook and wait for the response
-      //const response = await fetch("http://localhost:5678/webhook/21cf491f-fef8-432f-8981-ac92fc8e9c11/chat", {
         const response = await fetch("http://127.0.0.1:5001/api/chat",{ 
         method: "POST",
         headers: { 
