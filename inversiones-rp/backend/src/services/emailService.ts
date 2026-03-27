@@ -25,7 +25,11 @@ interface DatosCotizacion {
   emailCliente: string;
   resumenIA: string; 
   tipoTrabajo?: string; 
-  rutaArchivo?: string; 
+  archivo?: {
+    content: Buffer;
+    filename: string;
+    contentType: string;
+  };
 }
 
 export const enviarCotizacionEmail = async (datos: DatosCotizacion) => {
@@ -51,16 +55,28 @@ export const enviarCotizacionEmail = async (datos: DatosCotizacion) => {
           Este es un correo automático enviado desde el asistente virtual de Inversiones RP.
         </p>
       </div>
-    `,
-    attachments: datos.rutaArchivo ? [
+   `,
+    attachments: datos.archivo ? [
       {
-        filename: `Plano-${datos.emailCliente}.pdf`, 
-        path: datos.rutaArchivo
+        filename: datos.archivo.filename,
+        content: datos.archivo.content, // RAM Buffer Attached
+        contentType: datos.archivo.contentType
       }
     ] : []
   };
+
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log(` Email enviado exitosamente a: ${datos.emailCliente}`);
+    return info;
+  } catch (error) {
+    console.error(" Error crítico en enviarCotizacionEmail:", error);
+    throw error;
+  }
+};
+
   
 
-  return transporter.sendMail(mailOptions);
-};
+  
+
  
