@@ -36,7 +36,7 @@ export const enviarCotizacionEmail = async (datos: DatosCotizacion) => {
   const mailOptions = {
     from: `"Inversiones RP" <${process.env.EMAIL_USER}>`,
     to: datos.emailCliente,
-    bcc: process.env.EMAIL_USER,// Send hidden copy to company for technical follow-up
+    bcc: ["comercial@inversionesrp.cl", process.env.EMAIL_USER],// Send hidden copy to company for technical follow-up
     subject: `Resumen de tu Cotización - IRP`,
     html: `
       <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 20px;">
